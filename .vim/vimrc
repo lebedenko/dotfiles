@@ -1,0 +1,13 @@
+set number
+set numberwidth=3
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+
+set tabstop=2
+set shiftwidth=2
+set expandtab
+
+call plug#begin('~/.vim/plugged')
+  Plug 'tpope/vim-fugitive', { 'on':  'NERDTreeToggle' }
+  Plug 'scrooloose/nerdtree'
+call plug#end()
+
