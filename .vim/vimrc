@@ -54,6 +54,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'airblade/vim-gitgutter'
 "  Plug 'mattn/emmet-vim'
   Plug 'tpope/vim-vinegar'
+  Plug 'mhinz/vim-startify'
 call plug#end()
 
 if (has("termguicolors"))
