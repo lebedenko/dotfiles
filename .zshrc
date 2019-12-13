@@ -118,10 +118,20 @@ export CDL_API_LOCAL_CACHE_PATH=/tmp
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+autoload zmv
 
 function =
 {
   echo "$@" | bc -l
 }
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.myenv.zsh ] && source ~/.myenv.zsh
+
+
+PATH="/home/andrew/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/andrew/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/andrew/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/andrew/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/andrew/perl5"; export PERL_MM_OPT;

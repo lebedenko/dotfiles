@@ -1,5 +1,7 @@
 set nocompatible
 
+set noswapfile
+
 syntax on
 
 set ttimeoutlen=50
