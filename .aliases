@@ -1,12 +1,6 @@
-alias ls='ls --color=auto --group-directories-first'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
-alias ll='ls -lF'
-alias lla='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-alias fm='ranger'
-
+alias ls='eza --group-directories-first --icons'
+alias l='ls -l'
+alias ll='ls -la'
+alias lt='ls -lT'
+alias vi='nvim'
+alias cat='bat --paging=never -p'

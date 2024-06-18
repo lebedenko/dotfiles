@@ -1,0 +1,11 @@
+[window]
+decorations = "None"
+opacity = 0.98
+blur = true
+startup_mode = "Maximized"
+
+[scrolling]
+history = 100000
+
+[mouse]
+hide_when_typing = true
