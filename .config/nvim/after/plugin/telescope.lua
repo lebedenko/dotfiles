@@ -30,6 +30,7 @@ telescope.setup({
         ['<CR>'] = actions.select_default + actions.center,
         ['<Esc>'] = actions.close,
         ['<Tab>'] = actions.add_selection,
+        ['<C-r>'] = actions.delete_buffer,
       },
     },
     color_devicons = true,

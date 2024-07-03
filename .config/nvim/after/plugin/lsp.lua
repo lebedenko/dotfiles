@@ -1,6 +1,3 @@
--- Global vars
--- vim.g.lsp_zero_ui_float_border = border_shape
-
 local lsp = require('lsp-zero')
 local border_shape = 'rounded'
 
@@ -37,6 +34,7 @@ require('mason-lspconfig').setup({
     'jsonls',
     'lua_ls',
     'pyright',
+    'ruff',
     'tsserver',
   },
   handlers = {

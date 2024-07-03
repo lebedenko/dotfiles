@@ -57,15 +57,15 @@ return require('packer').startup(function(use)
     }
   }
 
-  use 'onsails/lspkind.nvim'
-
   -- use {
-  --   'jose-elias-alvarez/null-ls.nvim',
+  --   'nvimtools/none-ls.nvim',
   --   requires = {
   --     { 'nvim-lua/plenary.nvim' },
   --     { 'VonHeikemen/lsp-zero.nvim' },
   --   }
   -- }
+
+  use 'onsails/lspkind.nvim'
 
   use 'theprimeagen/harpoon'
 
