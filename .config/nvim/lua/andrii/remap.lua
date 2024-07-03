@@ -28,7 +28,7 @@ vim.keymap.set('n', '<leader>Y', '"+Y')
 
 vim.keymap.set('n', '<leader>qo', '<cmd>copen<CR>')
 vim.keymap.set('n', '<leader>qc', '<cmd>cclose<CR>')
-vim.keymap.set('n', '[q', '<cmd>cnext<CR>zz')
-vim.keymap.set('n', ']q', '<cmd>cprev<CR>zz')
+vim.keymap.set('n', ']q', '<cmd>cnext<CR>zz')
+vim.keymap.set('n', '[q', '<cmd>cprev<CR>zz')
 
 vim.keymap.set('n', '<leader>t', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
