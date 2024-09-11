@@ -1,5 +1,6 @@
 require('tokyonight').setup({
   style = 'storm',
+  -- style = 'day',
   dim_inactive = true,
   -- transparent = true,
   styles = {
