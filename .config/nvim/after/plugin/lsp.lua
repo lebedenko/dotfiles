@@ -35,7 +35,7 @@ require('mason-lspconfig').setup({
     'lua_ls',
     'pyright',
     'ruff',
-    'tsserver',
+    'ts_ls',
   },
   handlers = {
     function(server_name)
@@ -71,8 +71,8 @@ require('mason-lspconfig').setup({
       })
     end,
 
-    tsserver = function()
-      require('lspconfig').tsserver.setup({
+    ts_ls = function()
+      require('lspconfig').ts_ls.setup({
         on_attach = function(_, bufnr)
           vim.keymap.set('n', 'gi', ':OrganizeImports<CR>', {
             buffer = bufnr,
