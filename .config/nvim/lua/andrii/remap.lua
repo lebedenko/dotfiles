@@ -32,3 +32,10 @@ vim.keymap.set('n', ']q', '<cmd>cnext<CR>zz')
 vim.keymap.set('n', '[q', '<cmd>cprev<CR>zz')
 
 vim.keymap.set('n', '<leader>t', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+
+vim.keymap.set('c', '<C-h>', '<left>')
+vim.keymap.set('c', '<C-j>', '<down>')
+vim.keymap.set('c', '<C-k>', '<up>')
+vim.keymap.set('c', '<C-l>', '<right>')
+vim.keymap.set('c', '^', '<home>')
+vim.keymap.set('c', '$', '<end>')
