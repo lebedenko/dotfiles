@@ -1,7 +1,3 @@
 [font]
-# normal = { family = "MesloLGS Nerd Font Mono", style = "Regular" }
-# normal = { family = "MesloLGS Nerd Font", style = "Regular" }
-# normal = { family = "FiraCode Nerd Font", style = "Regular" }
-normal = { family = "Hack Nerd Font", style = "Regular" }
-# normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
 size = 16
