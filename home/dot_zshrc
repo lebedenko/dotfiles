@@ -1,0 +1,39 @@
+# Keep prompt initialization before commands that might produce output.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+zstyle ':omz:update' frequency 10
+ZSH_THEME=""
+[[ -r "$ZSH_CUSTOM/themes/powerlevel10k/powerlevel10k.zsh-theme" ]] && ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+plugins=()
+for plugin in git vi-mode zsh-autosuggestions fzf; do
+  [[ $plugin == fzf ]] && ! (( $+commands[fzf] )) && continue
+  if [[ -r "$ZSH_CUSTOM/plugins/$plugin/$plugin.plugin.zsh" || -r "$ZSH/plugins/$plugin/$plugin.plugin.zsh" ]]; then
+    plugins+=($plugin)
+  fi
+done
+unset plugin
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+else
+  autoload -Uz compinit
+  compinit -d "${ZDOTDIR:-$HOME}/.zcompdump"
+  bindkey -v
+fi
+(( $+widgets[autosuggest-accept] )) && bindkey '^ ' autosuggest-accept
+
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"
+if (( $+commands[fzf] )) && [[ -r "$HOME/.config/zsh/fzf.zsh" ]]; then
+  source "$HOME/.config/zsh/fzf.zsh"
+fi
+(( $+commands[ng] )) && source <(ng completion script)
+(( $+commands[zoxide] )) && eval "$(zoxide init --cmd cd zsh)"
+[[ -r "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
+# Work settings, credentials, and optional environment managers belong here.
+[[ -r "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+true

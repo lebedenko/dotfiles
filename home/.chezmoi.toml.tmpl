@@ -1,0 +1,14 @@
+{{- $role := promptChoiceOnce . "role" "Machine role" (list "workstation" "server") "workstation" -}}
+{{- $workstation := eq $role "workstation" -}}
+{{- $zsh := promptBoolOnce . "zsh" "Manage Zsh" $workstation -}}
+{{- $git := promptBoolOnce . "git" "Manage Git" true -}}
+{{- $tmux := promptBoolOnce . "tmux" "Manage tmux" true -}}
+{{- $nvim := promptBoolOnce . "nvim" "Manage Neovim" $workstation -}}
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+role = {{ $role | quote }}
+zsh = {{ $zsh }}
+git = {{ $git }}
+tmux = {{ $tmux }}
+nvim = {{ $nvim }}

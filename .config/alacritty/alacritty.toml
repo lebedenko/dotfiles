@@ -1,8 +1,0 @@
-import = [
-  "~/.config/alacritty/common.toml",
-  "~/.config/alacritty/env.toml",
-  "~/.config/alacritty/font.toml",
-  "~/.config/alacritty/theme.toml",
-]
-
-live_config_reload = true

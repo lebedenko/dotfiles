@@ -1,0 +1,22 @@
+{{ if not .zsh }}
+.zshrc
+.p10k.zsh
+.config/zsh
+{{ end }}
+{{ if not .git }}
+.gitconfig
+{{ end }}
+{{ if not .tmux }}
+.config/tmux
+{{ end }}
+{{ if not .nvim }}
+.config/nvim
+{{ end }}
+# Local overrides and runtime state must never become managed on recursive add.
+.gitconfig.local
+.zshrc.local
+.config/tmux/local.conf
+.config/tmux/plugins
+.config/tmux/resurrect
+.config/nvim/local.lua
+.config/nvim/lua/plugins/local.lua
