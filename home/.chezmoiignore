@@ -29,6 +29,7 @@
 .config/tmux/local.conf
 .config/tmux/plugins
 .config/tmux/resurrect
+.config/nvim/lazy-lock.json
 .config/nvim/local.lua
 .config/nvim/lua/plugins/local.lua
 .config/ghostty/config.local
