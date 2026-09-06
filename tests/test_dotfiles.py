@@ -12,6 +12,11 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ("zsh", "git", "tmux", "nvim")
 TARGETS = (".zshrc", ".gitconfig", ".config/tmux/tmux.conf", ".config/nvim/init.lua")
+EXTRAS = ("bat", "btop", "eza", "ghostty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
+EXTRA_TARGETS = (".config/bat/config", ".config/btop/btop.conf", ".config/eza/theme.yml",
+                 ".config/ghostty/config", ".config/hypr/hyprland.lua", ".config/sway/config",
+                 ".config/uwsm/env", ".config/wireplumber/wireplumber.conf.d/80-soft-mixer.conf",
+                 ".config/dolphinrc")
 
 
 class DotfilesTest(unittest.TestCase):
@@ -52,6 +57,7 @@ class DotfilesTest(unittest.TestCase):
             self.config.write_text(output)
             data = json.loads(self.run_command(self.chezmoi + ["data", "--format=json"]))
             self.assertEqual([data[app] for app in APPS], [role == "workstation", True, True, role == "workstation"])
+            self.assertEqual([data[app] for app in EXTRAS], [False] * len(EXTRAS))
         self.configure((True, False, False, True), "server")
         output = self.run_command(self.chezmoi + ["execute-template", "--init", "--file", str(ROOT / "home/.chezmoi.toml.tmpl")])
         self.config.write_text(output)
@@ -60,8 +66,10 @@ class DotfilesTest(unittest.TestCase):
         self.assertEqual(data["chezmoi"]["workingTree"], str(ROOT))
 
     def test_actual_init_does_not_apply_and_reinitialization_remembers(self):
+        prompts = "Manage Zsh=true,Manage Git=false,Manage tmux=true,Manage Neovim=false,"
+        prompts += ",".join(f"Manage {app}=false" for app in EXTRAS)
         self.run_command(self.chezmoi + ["init", "--promptChoice", "Machine role=server",
-            "--promptBool", "Manage Zsh=true,Manage Git=false,Manage tmux=true,Manage Neovim=false"])
+            "--promptBool", prompts])
         self.assertFalse((self.home / ".zshrc").exists())
         self.run_command(self.chezmoi + ["init"])
         data = json.loads(self.run_command(self.chezmoi + ["data", "--format=json"]))
@@ -171,6 +179,90 @@ class DotfilesTest(unittest.TestCase):
                 self.assertEqual(package in install.split(), candidate == app)
         self.configure((False,) * 4)
         self.assertIn("nothing to install", self.run_command(["python3", str(ROOT / "scripts/setup.py"), "--config", str(self.config)]))
+
+    def test_additional_package_choices_survive_reinitialization(self):
+        self.configure((False,) * 4, "server")
+        prompts = ",".join(f"Manage {app}=true" for app in EXTRAS)
+        self.run_command(self.chezmoi + ["init", "--promptBool", prompts])
+        self.run_command(self.chezmoi + ["init"])
+        data = json.loads(self.run_command(self.chezmoi + ["data", "--format=json"]))
+        self.assertTrue(all(data[app] is True for app in EXTRAS))
+        self.assertFalse(any(data[app] for app in APPS))
+        managed = self.run_command(self.chezmoi + ["managed"]).splitlines()
+        self.assertTrue(set(EXTRA_TARGETS).issubset(managed))
+
+    def test_additional_configs_apply_independently_and_preserve_local_files(self):
+        for app, target in zip(EXTRAS, EXTRA_TARGETS):
+            with self.subTest(app=app):
+                self.configure((False,) * 4)
+                with self.config.open("a") as config:
+                    config.write(f"{app} = true\n")
+                managed = self.run_command(self.chezmoi + ["managed"]).splitlines()
+                self.assertEqual(set(managed).intersection(EXTRA_TARGETS), {target})
+                self.run_command(self.chezmoi + ["apply"])
+                self.assertTrue((self.home / target).is_file())
+                self.assertEqual(self.run_command(self.chezmoi + ["diff"]), "")
+                self.run_command(self.chezmoi + ["apply"])
+                self.assertEqual(self.run_command(self.chezmoi + ["diff"]), "")
+        local_paths = ["ghostty/config.local", "hypr/local.lua", "hypr/hyprlock.conf.bak",
+                       "sway/config.local", "uwsm/env.local", "uwsm/env-hyprland.local",
+                       "uwsm/env-sway.local", "uwsm/default-id", "uwsm/env.d/90-local",
+                       "wireplumber/wireplumber.conf.d/99-local.conf", "btop/btop.log"]
+        self.configure((False,) * 4)
+        with self.config.open("a") as config:
+            config.write("".join(f"{app} = true\n" for app in EXTRAS))
+        for name in local_paths:
+            path = self.home / ".config" / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("local sentinel\n")
+        self.run_command(self.chezmoi + ["apply", "--force"])
+        managed = self.run_command(self.chezmoi + ["managed"]).splitlines()
+        for name in local_paths:
+            self.assertNotIn(".config/" + name, managed)
+            self.assertEqual((self.home / ".config" / name).read_text(), "local sentinel\n")
+        before = {name: (self.home / name).read_bytes() for name in EXTRA_TARGETS}
+        self.configure((False,) * 4)
+        self.run_command(self.chezmoi + ["apply", "--force"])
+        for name, content in before.items():
+            self.assertEqual((self.home / name).read_bytes(), content)
+
+    def test_imported_lua_and_uwsm_shell_syntax(self):
+        for path in (ROOT / "home/dot_config/hypr").glob("*.lua"):
+            self.run_command(["luac", "-p", str(path)])
+        for name in ("env", "env-hyprland", "env-sway"):
+            self.run_command(["sh", "-n", str(ROOT / "home/dot_config/uwsm" / name)])
+        self.configure((False,) * 4)
+        with self.config.open("a") as config:
+            config.write("uwsm = true\n")
+        self.run_command(self.chezmoi + ["apply"])
+        local_env = self.home / ".config/uwsm/env.local"
+        local_env.write_text("export XCURSOR_SIZE=32\n")
+        output = self.run_command(["sh", "-c", '. "$HOME/.config/uwsm/env"; printf "%s" "$XCURSOR_SIZE"'])
+        self.assertEqual(output, "32")
+
+    def test_additional_packages_are_independent_of_managed_apps(self):
+        for distro in ("arch", "manjaro", "debian"):
+            for app in EXTRAS:
+                with self.subTest(distro=distro, app=app):
+                    self.configure((False,) * 4, "server")
+                    with self.config.open("a") as config:
+                        config.write(f"{app} = true\n")
+                    output = self.run_command(["python3", str(ROOT / "scripts/setup.py"),
+                        "--config", str(self.config), "--preview", "--distro", distro])
+                    install = next(line for line in output.splitlines() if " -S " in line or "apt-get install " in line)
+                    self.assertEqual(set(install.split()).intersection(EXTRAS), {app})
+                    self.assertNotIn("git", install.split())
+                    self.assertNotIn("git clone", output)
+                    self.assertFalse((self.home / ".config").exists())
+
+    def test_additional_package_selection_rejects_non_boolean(self):
+        self.configure((False,) * 4)
+        with self.config.open("a") as config:
+            config.write('bat = "false"\n')
+        result = subprocess.run(["python3", str(ROOT / "scripts/setup.py"),
+            "--config", str(self.config)], env=self.env, text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("additional package selections must be booleans", result.stderr)
 
     def test_explicit_setup_preserves_existing_installations(self):
         self.configure((True, False, True, False))

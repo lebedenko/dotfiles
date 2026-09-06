@@ -1,0 +1,13 @@
+# Shared Wayland application preferences. Machine overrides go in env.local.
+export XCURSOR_SIZE=24
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+uwsm_local_env="${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.local"
+if [ -r "$uwsm_local_env" ]; then
+    . "$uwsm_local_env"
+fi
+unset uwsm_local_env

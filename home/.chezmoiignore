@@ -12,6 +12,17 @@
 {{ if not .nvim }}
 .config/nvim
 {{ end }}
+{{ range $app := list "bat" "btop" "eza" "ghostty" "sway" "uwsm" "wireplumber" }}
+{{ if not (get $ $app) }}
+.config/{{ $app }}
+{{ end }}
+{{ end }}
+{{ if not (get . "hyprland") }}
+.config/hypr
+{{ end }}
+{{ if not (get . "dolphin") }}
+.config/dolphinrc
+{{ end }}
 # Local overrides and runtime state must never become managed on recursive add.
 .gitconfig.local
 .zshrc.local
@@ -20,3 +31,14 @@
 .config/tmux/resurrect
 .config/nvim/local.lua
 .config/nvim/lua/plugins/local.lua
+.config/ghostty/config.local
+.config/hypr/local.lua
+.config/sway/config.local
+.config/uwsm/*.local
+.config/uwsm/env.d
+.config/uwsm/env-*.d
+.config/uwsm/default-id
+.config/wireplumber/wireplumber.conf.d/99-local.conf
+.config/bat/cache
+.config/btop/*.log
+.config/hypr/*.bak

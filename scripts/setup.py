@@ -13,6 +13,9 @@ import subprocess
 import sys
 
 
+EXTRA_PACKAGES = ("bat", "btop", "eza", "ghostty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
+
+
 def run(command):
     return subprocess.check_output(command, text=True).strip()
 
@@ -68,6 +71,8 @@ def main():
     apps = ("zsh", "git", "tmux", "nvim")
     if data.get("role") not in ("workstation", "server") or any(type(data.get(app)) is not bool for app in apps):
         parser.error("initialize this repository with chezmoi init first")
+    if any(type(data.get(app, False)) is not bool for app in EXTRA_PACKAGES):
+        parser.error("additional package selections must be booleans")
     release = {}
     for line in Path("/etc/os-release").read_text().splitlines():
         if "=" in line and not line.startswith("#"):
@@ -79,6 +84,7 @@ def main():
         parser.error(f"unsupported distribution: {distro}")
     print(f"{'EXECUTE' if args.execute else 'PREVIEW'}: {distro} / {arch}; role={data['role']}")
     packages = set()
+    packages.update(app for app in EXTRA_PACKAGES if data.get(app, False))
     if any(data[app] for app in ("git", "zsh", "tmux", "nvim")):
         packages.add("git")  # also needed for the selected plugin managers
     for app, package in (("zsh", "zsh"), ("tmux", "tmux"), ("nvim", "neovim")):
@@ -96,6 +102,10 @@ def main():
             subprocess.run(cmd, check=True)
 
     if packages:
+        if distro == "debian" and packages.intersection(EXTRA_PACKAGES):
+            print("Debian: selected additional packages must be available in your configured repositories. "
+                  "Ghostty may require a separate installation; Hyprland and uwsm may require backports. "
+                  "Setup does not add repositories.", flush=True)
         prefix = [] if os.geteuid() == 0 else ["sudo"]
         install = ["pacman", "-S", "--needed"] if distro != "debian" else ["apt-get", "install"]
         action(prefix + install + sorted(packages))

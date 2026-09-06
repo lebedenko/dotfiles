@@ -1,0 +1,6 @@
+# GPU-specific workarounds belong in env-sway.local.
+uwsm_local_env="${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env-sway.local"
+if [ -r "$uwsm_local_env" ]; then
+    . "$uwsm_local_env"
+fi
+unset uwsm_local_env
