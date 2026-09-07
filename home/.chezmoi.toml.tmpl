@@ -12,6 +12,6 @@ zsh = {{ $zsh }}
 git = {{ $git }}
 tmux = {{ $tmux }}
 nvim = {{ $nvim }}
-{{ range $app := list "bat" "btop" "eza" "ghostty" "hyprland" "sway" "uwsm" "wireplumber" "dolphin" }}
+{{ range $app := list "bat" "btop" "eza" "ghostty" "kitty" "hyprland" "sway" "uwsm" "wireplumber" "dolphin" }}
 {{ $app }} = {{ promptBoolOnce $ $app (printf "Manage %s" $app) false }}
 {{ end }}

@@ -12,7 +12,7 @@
 {{ if not .nvim }}
 .config/nvim
 {{ end }}
-{{ range $app := list "bat" "btop" "eza" "ghostty" "sway" "uwsm" "wireplumber" }}
+{{ range $app := list "bat" "btop" "eza" "ghostty" "kitty" "sway" "uwsm" "wireplumber" }}
 {{ if not (get $ $app) }}
 .config/{{ $app }}
 {{ end }}
@@ -33,6 +33,7 @@
 .config/nvim/local.lua
 .config/nvim/lua/plugins/local.lua
 .config/ghostty/config.local
+.config/kitty/local.conf
 .config/hypr/local.lua
 .config/sway/config.local
 .config/uwsm/*.local

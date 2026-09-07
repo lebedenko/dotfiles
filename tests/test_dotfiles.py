@@ -12,9 +12,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ("zsh", "git", "tmux", "nvim")
 TARGETS = (".zshrc", ".gitconfig", ".config/tmux/tmux.conf", ".config/nvim/init.lua")
-EXTRAS = ("bat", "btop", "eza", "ghostty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
+EXTRAS = ("bat", "btop", "eza", "ghostty", "kitty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
 EXTRA_TARGETS = (".config/bat/config", ".config/btop/btop.conf", ".config/eza/theme.yml",
-                 ".config/ghostty/config", ".config/hypr/hyprland.lua", ".config/sway/config",
+                 ".config/ghostty/config", ".config/kitty/kitty.conf", ".config/hypr/hyprland.lua", ".config/sway/config",
                  ".config/uwsm/env", ".config/wireplumber/wireplumber.conf.d/80-soft-mixer.conf",
                  ".config/dolphinrc")
 
@@ -204,7 +204,7 @@ class DotfilesTest(unittest.TestCase):
                 self.assertEqual(self.run_command(self.chezmoi + ["diff"]), "")
                 self.run_command(self.chezmoi + ["apply"])
                 self.assertEqual(self.run_command(self.chezmoi + ["diff"]), "")
-        local_paths = ["ghostty/config.local", "hypr/local.lua", "hypr/hyprlock.conf.bak",
+        local_paths = ["ghostty/config.local", "kitty/local.conf", "hypr/local.lua", "hypr/hyprlock.conf.bak",
                        "sway/config.local", "uwsm/env.local", "uwsm/env-hyprland.local",
                        "uwsm/env-sway.local", "uwsm/default-id", "uwsm/env.d/90-local",
                        "wireplumber/wireplumber.conf.d/99-local.conf", "btop/btop.log"]

@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 
-EXTRA_PACKAGES = ("bat", "btop", "eza", "ghostty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
+EXTRA_PACKAGES = ("bat", "btop", "eza", "ghostty", "kitty", "hyprland", "sway", "uwsm", "wireplumber", "dolphin")
 
 
 def run(command):

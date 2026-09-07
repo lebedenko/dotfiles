@@ -3,7 +3,7 @@
 Selected CLI and desktop settings for Arch Linux, Manjaro, and Debian (including Raspberry Pis).
 Zsh, Git, tmux, and Neovim are independent selections. Workstations default to all
 four; servers default to Git and tmux. Hardware never determines the role.
-Additional applications are independent, opt-in selections: bat, btop, eza, Ghostty,
+Additional applications are independent, opt-in selections: bat, btop, eza, Ghostty, Kitty,
 Hyprland, Sway, uwsm, WirePlumber, and Dolphin. Each selection controls package setup
 and configuration management. labwc, GNOME, and desktop shell imports remain deferred.
 
@@ -41,7 +41,7 @@ Distribution and architecture come from the running system, not these choices.
 Initialization also asks `Manage <application>` for each additional application (default:
 no on both roles). Existing machines can run `chezmoi init` to answer the new prompts,
 or enable the corresponding `[data]` booleans in `chezmoi edit-config`: `bat`, `btop`,
-`eza`, `ghostty`, `hyprland`, `sway`, `uwsm`, `wireplumber`, and `dolphin`.
+`eza`, `ghostty`, `kitty`, `hyprland`, `sway`, `uwsm`, `wireplumber`, and `dolphin`.
 Missing keys in older configs mean disabled. Previously saved package selections are
 remembered and now also enable the corresponding configs on the next apply.
 `hyprland` manages `~/.config/hypr`, and `dolphin` manages `~/.config/dolphinrc`.
@@ -148,11 +148,15 @@ Dolphin version/timestamp state, and uwsm's saved `default-id` are not imported.
 | `btop` | `~/.config/btop/btop.conf`, `themes/tokyonight.theme` | Theme, layout, Vim keys; theme resolved by name |
 | `eza` | `~/.config/eza/theme.yml` | TokyoNight file and permission colors |
 | `ghostty` | `~/.config/ghostty/config` | Theme, font size, quick terminal, keybinding |
+| `kitty` | `~/.config/kitty/kitty.conf` | HoloNight palette and JetBrainsMono Nerd Font at size 16 |
 | `hyprland` | `~/.config/hypr/*.lua`, `hypridle.conf` | Modular Lua setup, palette, input, bindings, rules, idle settings |
 | `sway` | `~/.config/sway/config` | Input, workspaces, layouts, bindings, uwsm finalization |
 | `uwsm` | `~/.config/uwsm/env`, `env-hyprland`, `env-sway` | Shared Wayland environment and local override loading |
 | `wireplumber` | `~/.config/wireplumber/wireplumber.conf.d/80-soft-mixer.conf` | ALSA software mixer rule |
 | `dolphin` | `~/.config/dolphinrc` | Places icons, hidden menu bar, preview plugin preferences |
+
+Kitty uses JetBrainsMono Nerd Font; install the font separately or override
+`font_family` in `~/.config/kitty/local.conf`.
 
 After applying bat's config and theme, build its local theme cache:
 
@@ -203,6 +207,7 @@ move it aside before using the imported configuration.
 | Neovim | `~/.config/nvim/local.lua` | Loaded before LazyVim; environment and tool paths |
 | Neovim | `~/.config/nvim/lua/plugins/local.lua` | Optional local Lazy plugin specs |
 | Ghostty | `~/.config/ghostty/config.local` | Optional config loaded after shared settings |
+| Kitty | `~/.config/kitty/local.conf` | Optional config loaded after shared settings |
 | Hyprland | `~/.config/hypr/local.lua` | Loaded last; monitor assignments, devices, binding overrides |
 | Sway | `~/.config/sway/config.local` | Included last; output layout and binding overrides |
 | uwsm | `~/.config/uwsm/env.local` | Sourced after shared environment settings |
@@ -248,7 +253,7 @@ backup = home / ("dotfiles-backup-" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 backup.mkdir(mode=0o700)
 for name in (".zshrc", ".p10k.zsh", ".zshrc.local", ".gitconfig", ".gitconfig.local",
              ".tmux.conf", ".config/zsh", ".config/tmux", ".config/nvim",
-             ".config/bat", ".config/btop", ".config/eza", ".config/ghostty",
+             ".config/bat", ".config/btop", ".config/eza", ".config/ghostty", ".config/kitty",
              ".config/hypr", ".config/sway", ".config/uwsm", ".config/wireplumber",
              ".config/dolphinrc"):
     source, target = home / name, backup / name
