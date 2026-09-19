@@ -13,21 +13,26 @@ return {
         css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
         css_fn = false, -- Enable all CSS *functions*: rgb_fn and hsl_fn
       },
-      json = {
-        mode = "background",
-      },
-      cpp = {
-        mode = "background",
-      },
-      markdown = {
-        mode = "background",
-      },
-      svg = {
-        mode = "background",
-      },
-      qml = {
-        mode = "background",
+      filetypes = {
+        json = {
+          mode = "background",
+        },
+        cpp = {
+          mode = "background",
+        },
+        markdown = {
+          mode = "background",
+        },
+        svg = {
+          mode = "background",
+        },
+        qml = {
+          mode = "background",
+        },
       },
     },
+    config = function(_, opts)
+      require("colorizer").setup(opts.filetypes, opts.user_default_options)
+    end,
   },
 }

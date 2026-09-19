@@ -29,10 +29,11 @@ local function qmlls_import_paths(build_dir)
   local seen = {}
   for _, qmldir in ipairs(vim.fs.find("qmldir", { path = build_dir, type = "file", limit = 100 })) do
     local file = io.open(qmldir, "r")
-    local module = file and file:read("*l"):match("^module%s+([%w_.]+)$")
+    local first_line = file and file:read("*l")
     if file then
       file:close()
     end
+    local module = first_line and first_line:match("^module%s+([%w_.]+)$")
 
     local directory = vim.fs.dirname(qmldir)
     local parts = module and vim.split(module, ".", { plain = true }) or {}
