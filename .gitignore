@@ -10,4 +10,5 @@ home/dot_config/tmux/local.conf
 home/dot_config/tmux/plugins/
 home/dot_config/tmux/resurrect/
 home/dot_config/nvim/local.lua
+home/dot_config/nvim/lazy-lock.json
 home/dot_config/nvim/lua/plugins/local.lua

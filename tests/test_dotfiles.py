@@ -108,6 +108,23 @@ class DotfilesTest(unittest.TestCase):
         for target in paths[4:]:
             self.assertEqual((self.home / target).read_text(), "unmanaged sentinel\n")
 
+    def test_neovim_lockfile_stays_local_across_repeated_applies(self):
+        self.configure((False, False, False, True))
+        target = ".config/nvim/lazy-lock.json"
+        lockfile = self.home / target
+        for _ in range(2):
+            self.run_command(self.chezmoi + ["apply"])
+            self.assertTrue((self.home / ".config/nvim/init.lua").is_file())
+            self.assertFalse(lockfile.exists())
+        for revision in ("initial", "updated"):
+            content = (json.dumps({"local-plugin": {"commit": revision}}) + "\n").encode()
+            lockfile.write_bytes(content)
+            for _ in range(2):
+                self.run_command(self.chezmoi + ["apply", "--force"])
+                self.assertEqual(lockfile.read_bytes(), content)
+                self.assertNotIn(target, self.run_command(self.chezmoi + ["managed"]).splitlines())
+                self.assertEqual(self.run_command(self.chezmoi + ["diff"]), "")
+
     def test_zsh_without_optional_dependencies_and_git_local_include(self):
         self.configure((True, True, False, False))
         self.run_command(self.chezmoi + ["apply"])

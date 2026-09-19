@@ -116,7 +116,9 @@ chezmoi config for isolated previews.
 
 ### Neovim compatibility
 
-The imported LazyVim lockfile is preserved byte-for-byte. First launch retains its
+Neovim's `lazy-lock.json` is local application state, ignored by chezmoi and Git.
+Applying preserves an existing lockfile and does not deploy one to a fresh machine.
+Plugin revisions can therefore differ between machines. First launch retains its
 plugin bootstrap behavior and may download plugins, parsers, and Mason tools.
 This is separate from chezmoi apply and can require network access. Copilot remains
 an optional LazyVim extra; authentication stays local.
@@ -291,30 +293,91 @@ outside this repository.
 
 ## Daily workflow
 
-Use `chezmoi edit ~/.zshrc`, then `chezmoi diff` and `chezmoi apply`. To import a later
-portable file, review it and run `chezmoi add PATH`; inspect the source diff before
-committing. Avoid broad recursive adds of application data. Ignore rules protect the
-documented override paths but cannot identify every secret. After editing a managed
-live file, use `chezmoi re-add PATH` and review the result.
+Most days, do nothing with this repository. Using applications and updating plugins
+should not require dotfiles commits. Keep shared preferences in Git, intentional
+machine differences in local selections and override files, and application-maintained
+state (plugin revisions, caches, history, sessions) unmanaged.
 
-Commit and push reviewed source changes normally. On another initialized machine:
+Use the same `master` branch with a separate checkout and local application selections
+on each machine:
+
+| Machine/account | Starting selection |
+| --- | --- |
+| Development laptop and PC | `workstation`; enable desktop applications used on each |
+| Raspberry Pis and LAN server | `server`; Git and tmux, optionally Zsh and Neovim |
+| Your maintenance account on your wife's laptop | `server`; enable your preferred SSH tools |
+| Your wife's account | Do not initialize or apply this repository |
+
+`server` means a minimal starting selection, not a hardware category. Manage dotfiles
+as your own user; keep DB/HTTP services and system administration separate. Package
+installation affects the whole machine. On your wife's laptop, use existing tools
+unless you deliberately want a system package change.
+
+Before making a shared change, inspect the source checkout and start clean:
 
 ```sh
+chezmoi git status --short
 chezmoi git -- pull --ff-only
-chezmoi init
+chezmoi edit ~/.config/nvim/lua/plugins/colorizer.lua
 chezmoi diff
 chezmoi apply
 ```
 
-`chezmoi update` pulls and applies together; use separate steps to review first.
-Run setup preview again when selections change. Future desktop imports should have
-their own independent selection and ignore rules.
+Try the change, then review, commit the specific source files, and push:
+
+```sh
+chezmoi git diff
+chezmoi git add home/dot_config/nvim/lua/plugins/colorizer.lua
+chezmoi git -- commit -m "fix: adjust color highlighting"
+chezmoi git push
+```
+
+After editing a managed live file directly, use `chezmoi re-add PATH` and review the
+result. To import a new portable file, review it and run `chezmoi add PATH`. Avoid
+broad recursive imports of your home or configuration directories. Ignore rules
+protect documented override paths but cannot identify every secret.
+
+For machine-only changes, edit the existing local override directly: for example,
+`~/.config/hypr/local.lua` for monitors, `~/.zshrc.local` for shell settings, or
+`~/.config/nvim/local.lua` for the supported tool-path variables documented above.
+These changes need no commit. Back up local overrides and
+`~/.config/chezmoi/chezmoi.toml` separately.
+
+### Receiving changes on another machine
+
+Synchronize when you want newer shared settings, not every time you switch machines.
+First inspect the source checkout and live changes:
+
+```sh
+chezmoi git status --short
+chezmoi diff
+```
+
+Preserve intentional live edits by importing the specific file or moving the setting
+into an appropriate local override. Commit intentional source changes before pulling.
+Then run each step only after the preceding command succeeds and the diff is acceptable:
+
+```sh
+chezmoi git -- pull --ff-only
+chezmoi diff
+chezmoi apply
+```
+
+Both development machines can be used simultaneously. Ordinary use creates no
+conflict; editing shared configuration on both can. Pull before editing and push
+finished changes promptly. If both machines have commits and a fast-forward pull
+fails, fetch and merge the remote branch, resolve conflicts, and push. Do not force-push.
+
+Synchronize occasional machines during maintenance visits. Run `chezmoi init` again
+when newly introduced selection prompts need answers; routine updates do not need it.
+Run dependency setup when enabling applications or changing prerequisites, not on
+every pull. `chezmoi update` pulls and applies together; use separate steps to review
+first. Keep automatic commits, pushes, and login-time applies disabled.
 
 Update plugins separately: `omz update` for Oh My Zsh and reviewed
 `git -C PATH pull --ff-only` for Powerlevel10k, autosuggestions, and TPM. In tmux,
 prefix + I installs declared plugins and prefix + U updates them. Use `:Lazy` for
-editor updates; review and re-add `lazy-lock.json` only when intentionally sharing
-a new plugin lockfile.
+editor updates; leave `lazy-lock.json` local. Plugin updates need no dotfiles commit.
 
 ## Verification
 
@@ -329,7 +392,8 @@ They cover role defaults, remembered overrides, all 16 application combinations 
 Arch/Manjaro and Debian ARM/ARM64 profiles, repeat applies, unmanaged-file retention,
 Zsh startup without optional dependencies, Git includes, tmux bindings/overrides, Lua
 syntax, package previews, independent additional config selections, repeat applies,
-and retention of their local overrides. Profiles simulate template data, not native ARM or
+retention of their local overrides, and local Neovim lockfile preservation without
+deploying a lockfile to fresh destinations. Profiles simulate template data, not native ARM or
 distribution integration tests. No packages or plugins are downloaded. The sandbox
 must permit the temporary tmux socket. Full Neovim startup with plugins is a separate
 rollout check.
