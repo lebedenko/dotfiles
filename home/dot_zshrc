@@ -37,3 +37,12 @@ fi
 # Work settings, credentials, and optional environment managers belong here.
 [[ -r "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 true
+
+if (( $+commands[nvim] )); then
+  export EDITOR="nvim"
+elif (( $+commands[vim] )); then
+  export EDITOR="vim"
+elif (( $+commands[nano] )); then
+  export EDITOR="nano"
+fi
+export VISUAL="$EDITOR"
